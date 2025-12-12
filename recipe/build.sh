@@ -29,7 +29,7 @@ cmake \
     ..
 
 # install
-cmake --build . --target install --config Release
+cmake --build . --target install --config Release --parallel ${CPU_COUNT}
 
 # remove unnecessary files
 rm -rf $PREFIX/test

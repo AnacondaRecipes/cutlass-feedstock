@@ -1,0 +1,4 @@
+# This is a header-only package at this time, but we need CUDA >= 12.8 to use GCC 14
+# Until we update the aggregate, keep the following
+cuda_compiler_version:
+  - 13.0
