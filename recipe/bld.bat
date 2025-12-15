@@ -20,11 +20,11 @@ cmake ^
     -DCUTLASS_ENABLE_TESTS=OFF ^
     -DCUTLASS_ENABLE_EXAMPLES=OFF ^
     -DCUTLASS_INSTALL_TESTS=OFF ^
-    ..  
+    ..
 if errorlevel 1 exit 1
 
 :: install
-cmake --build . --target install --config Release
+cmake --build . --target install --config Release --parallel %CPU_COUNT%
 if errorlevel 1 exit 1
 
 :: remove unnecessary files

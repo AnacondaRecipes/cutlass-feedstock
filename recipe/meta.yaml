@@ -1,4 +1,4 @@
-{% set version = "4.3.2" %}
+{% set version = "4.3.3" %}
 
 package:
   name: cutlass
@@ -6,11 +6,11 @@ package:
 
 source:
   url: https://github.com/NVIDIA/cutlass/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: e84ccd6b0c749ca87a845fb57df3d8898257bda404c5bc93ad0fb51d6decf54d
+  sha256: f232806a955f91b47c005f30ad2b384ac8ab7c50bafdf25e95b821ffcbae84a8
 
 build:
   number: 0
-  skip: true  # [osx or cuda_compiler_version == "None"]
+  skip: true  # [osx]
   ignore_run_exports_from:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -23,23 +23,27 @@ requirements:
     - {{ compiler('cxx') }}
     - {{ compiler('cuda') }}
     - cmake
-    - ninja
+    - ninja-base
 
 test:
-  requires:
-    - tree  # [linux]
   commands:
-    # headers:
-    - tree $CONDA_PREFIX/include/cutlass  # [linux]
-    - tree $CONDA_PREFIX/include/cute  # [linux]
-    - tree %CONDA_PREFIX%\Library\include\cutlass  # [win]
-    - tree %CONDA_PREFIX%\Library\include\cute  # [win]
+    - test -d $PREFIX/include/cutlass            # [linux]
+    - test -d $PREFIX/include/cute               # [linux]
+    - test -d $PREFIX/lib/cmake                  # [linux]
+    - if not exist %LIBRARY_INC%\cutlass exit 1  # [win]
+    - if not exist %LIBRARY_INC%\cute exit 1     # [win]
+    - if not exist %LIBRARY_LIB%\cmake exit 1    # [win]
 
 about:
   home: https://github.com/NVIDIA/cutlass
   license: BSD-3-Clause
   license_file: LICENSE.txt
   summary: CUDA Templates for Linear Algebra Subroutines
+  description: |
+    CUTLASS is a collection of abstractions for implementing high-performance matrix-matrix multiplication (GEMM) and
+    related computations at all levels and scales within CUDA. It incorporates strategies for hierarchical decomposition
+    and data movement. CUTLASS decomposes these "moving parts" into reusable, modular software components and abstractions.
+  doc_url: https://docs.nvidia.com/cutlass/latest/overview.html
   dev_url: https://github.com/NVIDIA/cutlass
 
 extra:
