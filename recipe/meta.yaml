@@ -38,12 +38,13 @@ about:
   home: https://github.com/NVIDIA/cutlass
   license: BSD-3-Clause
   license_file: LICENSE.txt
+  license_family: BSD
   summary: CUDA Templates for Linear Algebra Subroutines
   description: |
     CUTLASS is a collection of abstractions for implementing high-performance matrix-matrix multiplication (GEMM) and
     related computations at all levels and scales within CUDA. It incorporates strategies for hierarchical decomposition
     and data movement. CUTLASS decomposes these "moving parts" into reusable, modular software components and abstractions.
-  doc_url: https://docs.nvidia.com/cutlass/latest/overview.html
+  doc_url: https://docs.nvidia.com/cutlass
   dev_url: https://github.com/NVIDIA/cutlass
 
 extra:
