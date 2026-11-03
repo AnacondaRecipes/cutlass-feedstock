@@ -1,4 +1,4 @@
-{% set version = "4.8.0" %}
+{% set version = "4.8.1" %}
 
 package:
   name: cutlass
@@ -6,11 +6,11 @@ package:
 
 source:
   url: https://github.com/NVIDIA/cutlass/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: b7bb2ba0473a5a5d699c62e5feb42caa11cb109ec58ba82ca458af9cd139f39b
+  sha256: 71fc2892e8bcd929398b5aa72e3393af1bad0cae9814cd75661ca88e688c2159
 
 build:
   number: 0
-  skip: true  # [osx]
+  skip: true  # [osx or cuda_compiler_version == "None"]
   ignore_run_exports_from:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
@@ -27,12 +27,29 @@ requirements:
 
 test:
   commands:
-    - test -d $PREFIX/include/cutlass            # [linux]
-    - test -d $PREFIX/include/cute               # [linux]
-    - test -d $PREFIX/lib/cmake                  # [linux]
-    - if not exist %LIBRARY_INC%\cutlass exit 1  # [win]
-    - if not exist %LIBRARY_INC%\cute exit 1     # [win]
-    - if not exist %LIBRARY_LIB%\cmake exit 1    # [win]
+    # headers
+    - test -f $PREFIX/include/cutlass/cutlass.h  # [linux]
+    - test -f $PREFIX/include/cutlass/version.h  # [linux]
+    - test -f $PREFIX/include/cute/tensor.hpp  # [linux]
+    - test -f $PREFIX/include/cute/arch/mma_sm107_umma.hpp  # [linux]
+    - if not exist %LIBRARY_INC%\cutlass\cutlass.h exit 1  # [win]
+    - if not exist %LIBRARY_INC%\cutlass\version.h exit 1  # [win]
+    - if not exist %LIBRARY_INC%\cute\tensor.hpp exit 1  # [win]
+    - if not exist %LIBRARY_INC%\cute\arch\mma_sm107_umma.hpp exit 1  # [win]
+    # CMake package config
+    - test -f $PREFIX/lib/cmake/NvidiaCutlass/NvidiaCutlassConfig.cmake  # [linux]
+    - test -f $PREFIX/lib/cmake/NvidiaCutlass/NvidiaCutlassConfigVersion.cmake  # [linux]
+    - if not exist %LIBRARY_LIB%\cmake\NvidiaCutlass\NvidiaCutlassConfig.cmake exit 1  # [win]
+    - if not exist %LIBRARY_LIB%\cmake\NvidiaCutlass\NvidiaCutlassConfigVersion.cmake exit 1  # [win]
+    # version metadata
+    - grep -q 'CUTLASS_PATCH {{ version.split(".")[2] }}' $PREFIX/include/cutlass/version.h  # [linux]
+    - grep -q 'CUTLASS_REVISION "{{ version }}"' $PREFIX/include/cutlass/version_extended.h  # [linux]
+    - grep -q 'set(PACKAGE_VERSION "{{ version }}")' $PREFIX/lib/cmake/NvidiaCutlass/NvidiaCutlassConfigVersion.cmake  # [linux]
+    - findstr /C:"CUTLASS_PATCH {{ version.split(".")[2] }}" %LIBRARY_INC%\cutlass\version.h  # [win]
+    - findstr /C:"CUTLASS_REVISION" %LIBRARY_INC%\cutlass\version_extended.h  # [win]
+    - findstr /C:"{{ version }}" %LIBRARY_INC%\cutlass\version_extended.h  # [win]
+    - findstr /C:"PACKAGE_VERSION" %LIBRARY_LIB%\cmake\NvidiaCutlass\NvidiaCutlassConfigVersion.cmake  # [win]
+    - findstr /C:"{{ version }}" %LIBRARY_LIB%\cmake\NvidiaCutlass\NvidiaCutlassConfigVersion.cmake  # [win]
 
 about:
   home: https://github.com/NVIDIA/cutlass
